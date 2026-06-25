@@ -60,3 +60,18 @@ function hero_slides_post_type()
 	register_post_type('slides', $args);
 }
 add_action('init', 'hero_slides_post_type', 0);
+
+/* Insert featured_image_url key value to our REST API object for slide custom post type */
+function add_featured_image_url_to_rest_api($data, $post, $context){
+	$featured_image_id = $data->data['featured_media'];
+	if ($featured_image_id) {
+		$featured_image_url = wp_get_attachment_image_url($featured_image_id, 'original');
+	}
+	
+	if(!empty($featured_image_url)){
+		$data->data['featured_image_url'] = $featured_image_url;
+	}
+
+	return $data;
+}
+add_filter('rest_prepare_slides', 'add_featured_image_url_to_rest_api', 10, 3);
